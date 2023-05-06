@@ -1,6 +1,7 @@
 package phrasebattle.service;
 
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import phrasebattle.domain.Direction;
 import phrasebattle.dto.TablePositionDto;
 import phrasebattle.factory.TablePositionFactory;
@@ -17,15 +18,15 @@ import java.util.stream.Collectors;
 @ApplicationScoped
 public class TablePositionService {
 
+    @Inject
     TablePositionRepository tablePositionRepository;
 
-    public List<List<TablePosition>> hideWords(Long userGameId, List<WordPhrase> words) {
+    public List<TablePositionDto> hideWords(Long userGameId, List<WordPhrase> words) {
         List<List<TablePosition>> positions = createTable(userGameId);
         for (WordPhrase word : words) {
             hideWord(word, positions);
         }
-        return positions;
-        //return savePositions(positions);
+        return savePositions(positions);
     }
 
     private Integer defineRow() {
@@ -83,8 +84,8 @@ public class TablePositionService {
             }
         }
 
-        if (row + letters + 1 !=  Constants.NUMBER_OF_TABLE_ROWS) {
-            TablePosition nextPosition = positions.get(row + letters + 1).get(column);
+        if (row + letters !=  Constants.NUMBER_OF_TABLE_ROWS) {
+            TablePosition nextPosition = positions.get(row + letters).get(column);
             if (nextPosition.getLetter() != null) {
                 return false;
             }
@@ -111,8 +112,8 @@ public class TablePositionService {
             }
         }
 
-        if (column + letters + 1 != Constants.NUMBER_OF_TABLE_COLUMNS) {
-            TablePosition nextPosition = positions.get(row).get(column + letters + 1);
+        if (column + letters != Constants.NUMBER_OF_TABLE_COLUMNS) {
+            TablePosition nextPosition = positions.get(row).get(column + letters);
             if (nextPosition.getLetter() != null) {
                 return false;
             }
@@ -144,12 +145,12 @@ public class TablePositionService {
         return positions;
     }
 
-//    private List<TablePositionDto> savePositions(List<List<TablePosition>> positions) {
-//        return tablePositionRepository.saveAll(positions.stream()
-//                        .flatMap(List::stream)
-//                        .collect(Collectors.toList()))
-//                .stream().map(TablePositionFactory::newTablePositionDto)
-//                .collect(Collectors.toList());
-//    }
+    private List<TablePositionDto> savePositions(List<List<TablePosition>> positions) {
+        return tablePositionRepository.saveAll(positions.stream()
+                        .flatMap(List::stream)
+                        .collect(Collectors.toList()))
+                .stream().map(TablePositionFactory::newTablePositionDto)
+                .collect(Collectors.toList());
+    }
 
 }

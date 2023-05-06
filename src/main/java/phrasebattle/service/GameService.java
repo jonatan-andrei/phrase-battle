@@ -19,7 +19,6 @@ public class GameService {
 
     public List<TablePositionDto> hideWords(Long userGameId, Long phraseId) {
         List<WordPhrase> words = wordPhraseService.findByPhraseId(phraseId);
-        //return tablePositionService.hideWords(userGameId, words);
-        return new ArrayList<>();
+        return tablePositionService.hideWords(userGameId, words);
     }
 }
